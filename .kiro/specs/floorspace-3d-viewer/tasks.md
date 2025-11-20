@@ -175,20 +175,35 @@
   - **Property 18: API errors return appropriate status codes**
   - **Validates: Requirements 8.5**
 
-- [ ] 5. Deploy API Gateway and Lambda functions
+- [x] 5. Deploy API Gateway and Lambda functions
+
+
+
+
+
   - Configure API Gateway endpoints with Lambda integrations
   - Attach Cognito authorizer to all endpoints
   - Deploy API to dev/staging environment
   - Test endpoints with Postman or curl
   - _Requirements: 8.1-8.5, 9.1-9.4_
 
-- [ ] 5.1 Write property test for token validation
+- [x] 5.1 Write property test for token validation
+
+
+
   - **Property 5: Token validation on API requests**
   - **Property 6: Invalid tokens return 401**
   - **Validates: Requirements 9.1, 9.2**
 
 - [ ] 6. Implement project dashboard
-- [ ] 6.1 Create ProjectDashboard component
+
+
+
+
+
+- [x] 6.1 Create ProjectDashboard component
+
+
   - Fetch user's projects from API on mount
   - Display loading state while fetching
   - Display "no projects" message when list is empty
@@ -196,21 +211,26 @@
   - Handle API errors and display error messages
   - _Requirements: 3.1, 3.2_
 
-- [ ] 6.2 Write property test for dashboard retrieval
+- [x] 6.2 Write property test for dashboard retrieval
+
+
   - **Property 7: Dashboard retrieves user projects**
   - **Validates: Requirements 3.1**
 
-- [ ] 6.3 Create ProjectCard component
+- [x] 6.3 Create ProjectCard component
+
   - Display project name, creation date, and last modified date
   - Handle click to navigate to editor
   - Add delete button with confirmation modal
   - _Requirements: 3.3, 3.4_
 
-- [ ] 6.4 Write property test for project display
+- [x] 6.4 Write property test for project display
+
   - **Property 8: Project display contains required fields**
   - **Validates: Requirements 3.3**
 
-- [ ] 6.5 Create CreateProjectModal component
+- [x] 6.5 Create CreateProjectModal component
+
   - Build form with project name and description fields
   - Validate project name is not empty
   - Call API to create new project
@@ -218,19 +238,28 @@
   - Handle API errors
   - _Requirements: 4.1, 4.4_
 
-- [ ] 6.6 Implement project deletion with confirmation
+- [x] 6.6 Implement project deletion with confirmation
+
   - Add delete button to ProjectCard
   - Show confirmation dialog before deletion
   - Call DELETE API endpoint
   - Update dashboard to remove deleted project
   - _Requirements: 7.1, 7.4_
 
-- [ ] 6.7 Write property test for dashboard update after deletion
+- [x] 6.7 Write property test for dashboard update after deletion
+
   - **Property 12: Dashboard updates after deletion**
   - **Validates: Requirements 7.4**
 
-- [ ] 7. Implement floorspace editor page
-- [ ] 7.1 Create FloorspaceEditorPage component
+- [x] 7. Implement floorspace editor page
+
+
+
+
+
+- [x] 7.1 Create FloorspaceEditorPage component
+
+
   - Set up iframe to load floorspace.js library
   - Fetch project data from API on mount
   - Load floorspace JSON into iframe using postMessage
@@ -238,25 +267,32 @@
   - Handle save errors and display status
   - _Requirements: 5.1, 5.2_
 
-- [ ] 7.2 Write property test for editor data loading
+- [x] 7.2 Write property test for editor data loading
+
+
+
   - **Property 13: Editor loads project data**
   - **Validates: Requirements 5.2**
 
-- [ ] 7.3 Implement iframe communication
+- [x] 7.3 Implement iframe communication
+
   - Set up postMessage listener for floorspace changes
   - Capture floorspace JSON updates from iframe
   - Send JSON data to iframe on load
   - Handle communication errors
   - _Requirements: 5.3_
 
-- [ ] 7.4 Create EditorToolbar component
+- [x] 7.4 Create EditorToolbar component
+
+
   - Add save button to manually trigger save
   - Add back button to return to dashboard
   - Add "View in 3D" button to navigate to 3D viewer
   - Display save status (saving, saved, error)
   - _Requirements: 5.4_
 
-- [ ] 7.5 Write property test for save round-trip
+- [x] 7.5 Write property test for save round-trip
+
   - **Property 14: Save operation round-trip**
   - **Validates: Requirements 5.3, 5.4**
 

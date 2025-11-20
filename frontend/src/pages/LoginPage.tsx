@@ -1,6 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signIn } from 'aws-amplify/auth';
+import { useAuth } from '../contexts/AuthContext';
 import { DevModeBanner } from '../components/DevModeBanner';
 import './LoginPage.css';
 
@@ -18,6 +19,7 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState;
+  const { checkAuth } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,6 +62,9 @@ export const LoginPage = () => {
           // Store JWT token in localStorage
           localStorage.setItem('authToken', session.tokens.idToken.toString());
           localStorage.setItem('userId', session.tokens.idToken.payload.sub as string);
+          
+          // Update auth context state
+          await checkAuth();
           
           // Redirect to dashboard
           navigate('/dashboard');

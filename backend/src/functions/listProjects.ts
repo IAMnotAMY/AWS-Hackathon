@@ -7,6 +7,13 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient);
 
 const TABLE_NAME = process.env.TABLE_NAME || 'floorspace-projects';
 
+const CORS_HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+};
+
 interface Project {
   userId: string;
   projectId: string;
@@ -18,13 +25,22 @@ interface Project {
 }
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+  // Handle OPTIONS preflight request
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: CORS_HEADERS,
+      body: '',
+    };
+  }
+
   try {
     // Extract userId from authorizer context
     const userId = event.requestContext.authorizer?.claims?.sub;
     if (!userId) {
       return {
         statusCode: 401,
-        headers: { 'Content-Type': 'application/json' },
+        headers: CORS_HEADERS,
         body: JSON.stringify({
           error: {
             code: 'UNAUTHORIZED',
@@ -59,7 +75,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: CORS_HEADERS,
       body: JSON.stringify({
         projects,
       }),
@@ -68,7 +84,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.error('Error in listProjects:', error);
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: CORS_HEADERS,
       body: JSON.stringify({
         error: {
           code: 'INTERNAL_ERROR',

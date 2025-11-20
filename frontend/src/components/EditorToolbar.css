@@ -1,0 +1,117 @@
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  min-height: 60px;
+}
+
+.editor-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.editor-toolbar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.editor-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toolbar-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.toolbar-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.toolbar-btn-back {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.toolbar-btn-back:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.toolbar-btn-save {
+  background-color: #28a745;
+  color: white;
+}
+
+.toolbar-btn-save:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.toolbar-btn-view3d {
+  background-color: #007bff;
+  color: white;
+}
+
+.toolbar-btn-view3d:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.save-status {
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+}
+
+.save-status-saving {
+  color: #666;
+  background-color: #f5f5f5;
+}
+
+.save-status-saved {
+  color: #28a745;
+  background-color: #d4edda;
+}
+
+.save-status-error {
+  color: #d32f2f;
+  background-color: #ffebee;
+}
+
+@media (max-width: 768px) {
+  .editor-toolbar {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .editor-toolbar-left,
+  .editor-toolbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .editor-toolbar-title {
+    font-size: 1.1rem;
+  }
+
+  .toolbar-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}

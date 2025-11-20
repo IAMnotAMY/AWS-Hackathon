@@ -5,6 +5,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
+import ProjectDashboard from './pages/ProjectDashboard';
+import FloorspaceEditorPage from './pages/FloorspaceEditorPage';
 import { verifyAwsConfig } from './utils/verifyConfig';
 
 // Verify and configure Amplify
@@ -26,15 +28,20 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           
-          {/* Protected routes will be added in future tasks */}
+          {/* Protected routes */}
           <Route 
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <div style={{ padding: '20px' }}>
-                  <h1>Dashboard</h1>
-                  <p>Protected dashboard page - to be implemented</p>
-                </div>
+                <ProjectDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/editor/:projectId" 
+            element={
+              <ProtectedRoute>
+                <FloorspaceEditorPage />
               </ProtectedRoute>
             } 
           />
