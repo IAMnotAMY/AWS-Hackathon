@@ -182,7 +182,9 @@ export class FloorspaceInfrastructureStack extends cdk.Stack {
     // GET /projects - List all projects for user
     projects.addMethod(
       'GET',
-      new apigateway.LambdaIntegration(listProjectsFunction),
+      new apigateway.LambdaIntegration(listProjectsFunction, {
+        proxy: true,
+      }),
       {
         authorizer,
         authorizationType: apigateway.AuthorizationType.COGNITO,
@@ -195,7 +197,9 @@ export class FloorspaceInfrastructureStack extends cdk.Stack {
     // GET /projects/{projectId} - Get specific project
     project.addMethod(
       'GET',
-      new apigateway.LambdaIntegration(getProjectFunction),
+      new apigateway.LambdaIntegration(getProjectFunction, {
+        proxy: true,
+      }),
       {
         authorizer,
         authorizationType: apigateway.AuthorizationType.COGNITO,
@@ -205,7 +209,9 @@ export class FloorspaceInfrastructureStack extends cdk.Stack {
     // POST /projects/{projectId} - Create or update project
     project.addMethod(
       'POST',
-      new apigateway.LambdaIntegration(createUpdateProjectFunction),
+      new apigateway.LambdaIntegration(createUpdateProjectFunction, {
+        proxy: true,
+      }),
       {
         authorizer,
         authorizationType: apigateway.AuthorizationType.COGNITO,
@@ -215,7 +221,9 @@ export class FloorspaceInfrastructureStack extends cdk.Stack {
     // DELETE /projects/{projectId} - Delete project
     project.addMethod(
       'DELETE',
-      new apigateway.LambdaIntegration(deleteProjectFunction),
+      new apigateway.LambdaIntegration(deleteProjectFunction, {
+        proxy: true,
+      }),
       {
         authorizer,
         authorizationType: apigateway.AuthorizationType.COGNITO,
@@ -228,7 +236,9 @@ export class FloorspaceInfrastructureStack extends cdk.Stack {
     // POST /projects/{projectId}/upload - Upload floorspace JSON
     upload.addMethod(
       'POST',
-      new apigateway.LambdaIntegration(uploadFloorspaceFunction),
+      new apigateway.LambdaIntegration(uploadFloorspaceFunction, {
+        proxy: true,
+      }),
       {
         authorizer,
         authorizationType: apigateway.AuthorizationType.COGNITO,

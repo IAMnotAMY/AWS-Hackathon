@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Gateway Test</h1>
+    <button onclick="testWithBearer()">Test with Bearer Token</button>
+    <button onclick="testWithoutBearer()">Test without Bearer</button>
+    <button onclick="testWithAccessToken()">Test with Access Token</button>
+    <pre id="result"></pre>
+
+    <script>
+        const API_URL = 'https://q7d10oz6lh.execute-api.us-east-1.amazonaws.com/prod/project';
+        
+        // Paste your ID token here from browser console
+        const ID_TOKEN = 'PASTE_YOUR_ID_TOKEN_HERE';
+        const ACCESS_TOKEN = 'PASTE_YOUR_ACCESS_TOKEN_HERE';
+
+        async function testWithBearer() {
+            try {
+                const response = await fetch(API_URL, {
+                    headers: {
+                        'Authorization': `Bearer ${ID_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('result').textContent = 
+                    `Status: ${response.status}\n` +
+                    `Response: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                document.getElementById('result').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testWithoutBearer() {
+            try {
+                const response = await fetch(API_URL, {
+                    headers: {
+                        'Authorization': ID_TOKEN,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('result').textContent = 
+                    `Status: ${response.status}\n` +
+                    `Response: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                document.getElementById('result').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testWithAccessToken() {
+            try {
+                const response = await fetch(API_URL, {
+                    headers: {
+                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                document.getElementById('result').textContent = 
+                    `Status: ${response.status}\n` +
+                    `Response: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                document.getElementById('result').textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

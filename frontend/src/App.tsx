@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import ProjectDashboard from './pages/ProjectDashboard';
 import FloorspaceEditorPage from './pages/FloorspaceEditorPage';
 import { verifyAwsConfig } from './utils/verifyConfig';
+import './utils/testAuth';
 
 // Verify and configure Amplify
 verifyAwsConfig();
