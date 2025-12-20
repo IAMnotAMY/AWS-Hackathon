@@ -125,8 +125,27 @@ export const api = {
 
   // Get a specific project
   getProject: async (projectId: string): Promise<Project> => {
-    const response = await apiClient.get<Project>(`/projects/${projectId}`);
-    return response.data;
+    // Get username from token
+    const session = await fetchAuthSession();
+    const username = session.tokens?.idToken?.payload['cognito:username'] || 
+                     session.tokens?.idToken?.payload.email ||
+                     'unknown';
+    
+    const response = await apiClient.get(`/project/${projectId}`, {
+      params: {
+        username: username
+      }
+    });
+    
+    // Handle both Lambda proxy response and direct response
+    let data = response.data;
+    
+    // If response has statusCode and body, it's a raw Lambda response
+    if (data.statusCode && data.body) {
+      data = JSON.parse(data.body);
+    }
+    
+    return data.project || data;
   },
 
   // Create or update a project

@@ -76,17 +76,19 @@ const ProjectDashboard = () => {
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <h1>My Projects</h1>
-        <div className="dashboard-header-actions">
-          <button
-            className="btn-create-project"
-            onClick={() => setShowCreateModal(true)}
-          >
-            + New Project
-          </button>
-          <button className="btn-sign-out" onClick={handleSignOut}>
-            Sign Out
-          </button>
+        <div className="dashboard-header-content">
+          <h1 className="dashboard-title">My Projects</h1>
+          <div className="dashboard-header-actions">
+            <button
+              className="btn-create-project"
+              onClick={() => setShowCreateModal(true)}
+            >
+              New Project
+            </button>
+            <button className="btn-sign-out" onClick={handleSignOut}>
+              Sign Out
+            </button>
+          </div>
         </div>
       </header>
 

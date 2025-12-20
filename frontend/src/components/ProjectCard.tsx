@@ -13,7 +13,7 @@ const ProjectCard = ({ project, onDelete }: ProjectCardProps) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleClick = () => {
-    navigate(`/editor/${project.ProjectID}`);
+    navigate(`/project/${project.ProjectID}`);
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {

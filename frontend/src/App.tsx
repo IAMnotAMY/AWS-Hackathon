@@ -6,6 +6,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import ProjectDashboard from './pages/ProjectDashboard';
+import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import FloorspaceEditorPage from './pages/FloorspaceEditorPage';
 import { verifyAwsConfig } from './utils/verifyConfig';
 import './utils/testAuth';
@@ -35,6 +36,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProjectDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/project/:projectId" 
+            element={
+              <ProtectedRoute>
+                <ProjectDetailsPage />
               </ProtectedRoute>
             } 
           />
