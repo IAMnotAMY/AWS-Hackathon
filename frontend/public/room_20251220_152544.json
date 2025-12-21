@@ -1,0 +1,211 @@
+{
+  "application": {
+    "currentSelections": {
+      "story": "story_14",
+      "space": null,
+      "shading": null,
+      "image": null,
+      "subSelection": null
+    },
+    "modes": {
+      "currentMode": "spaces"
+    }
+  },
+  "project": {
+    "config": {
+      "units": "si",
+      "language": "EN-US",
+      "north_axis": 0
+    },
+    "grid": {
+      "visible": true,
+      "spacing": 1.0
+    },
+    "view": {
+      "min_x": -1.0,
+      "min_y": -1.0,
+      "max_x": 6.0,
+      "max_y": 5.0
+    },
+    "map": {
+      "visible": false,
+      "latitude": 39.7392,
+      "longitude": -104.9903,
+      "zoom": 4.5,
+      "rotation": 0,
+      "elevation": 0
+    }
+  },
+  "stories": [
+    {
+      "id": "story_14",
+      "handle": null,
+      "name": "Story 1",
+      "image_visible": true,
+      "below_floor_plenum_height": 0,
+      "floor_to_ceiling_height": 3.0,
+      "above_ceiling_plenum_height": 0,
+      "multiplier": 1,
+      "color": "#FFFFFF",
+      "geometry": {
+        "id": "geometry_10",
+        "vertices": [
+          {
+            "id": "vertex_1",
+            "x": 0.0,
+            "y": 0.0,
+            "edge_ids": [
+              "edge_5",
+              "edge_8"
+            ]
+          },
+          {
+            "id": "vertex_2",
+            "x": 5.0,
+            "y": 0.0,
+            "edge_ids": [
+              "edge_5",
+              "edge_6"
+            ]
+          },
+          {
+            "id": "vertex_3",
+            "x": 5.0,
+            "y": 4.0,
+            "edge_ids": [
+              "edge_6",
+              "edge_7"
+            ]
+          },
+          {
+            "id": "vertex_4",
+            "x": 0.0,
+            "y": 4.0,
+            "edge_ids": [
+              "edge_7",
+              "edge_8"
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "edge_5",
+            "vertex_ids": [
+              "vertex_1",
+              "vertex_2"
+            ],
+            "face_ids": [
+              "face_9"
+            ]
+          },
+          {
+            "id": "edge_6",
+            "vertex_ids": [
+              "vertex_2",
+              "vertex_3"
+            ],
+            "face_ids": [
+              "face_9"
+            ]
+          },
+          {
+            "id": "edge_7",
+            "vertex_ids": [
+              "vertex_3",
+              "vertex_4"
+            ],
+            "face_ids": [
+              "face_9"
+            ]
+          },
+          {
+            "id": "edge_8",
+            "vertex_ids": [
+              "vertex_4",
+              "vertex_1"
+            ],
+            "face_ids": [
+              "face_9"
+            ]
+          }
+        ],
+        "faces": [
+          {
+            "id": "face_9",
+            "edge_ids": [
+              "edge_5",
+              "edge_6",
+              "edge_7",
+              "edge_8"
+            ],
+            "edge_order": [
+              1,
+              1,
+              1,
+              1
+            ]
+          }
+        ]
+      },
+      "images": [],
+      "spaces": [
+        {
+          "id": "space_11",
+          "handle": null,
+          "name": "bedroom",
+          "face_id": "face_9",
+          "building_unit_id": null,
+          "thermal_zone_id": null,
+          "space_type_id": null,
+          "construction_set_id": null,
+          "pitched_roof_id": null,
+          "daylighting_controls": [],
+          "below_floor_plenum_height": null,
+          "floor_to_ceiling_height": null,
+          "above_ceiling_plenum_height": null,
+          "floor_offset": null,
+          "open_to_below": null,
+          "building_type_id": null,
+          "template": null,
+          "color": "#E6F3FF",
+          "type": "space"
+        }
+      ],
+      "shading": [],
+      "windows": [
+        {
+          "window_definition_id": "window_def_12",
+          "edge_id": "edge_5",
+          "alpha": 0.5,
+          "id": "window_13",
+          "name": "Window 1"
+        }
+      ],
+      "doors": []
+    }
+  ],
+  "building_units": [],
+  "thermal_zones": [],
+  "space_types": [],
+  "construction_sets": [],
+  "window_definitions": [
+    {
+      "id": "window_def_12",
+      "name": "Window 1",
+      "window_definition_mode": "Single Window",
+      "wwr": null,
+      "sill_height": 0.9,
+      "window_spacing": null,
+      "height": 1.2,
+      "width": 1.5,
+      "window_type": "Fixed",
+      "overhang_projection_factor": null,
+      "fin_projection_factor": null,
+      "texture": "circles-5"
+    }
+  ],
+  "daylighting_control_definitions": [],
+  "pitched_roofs": [],
+  "door_definitions": [],
+  "version": "1.4.3"
+}
