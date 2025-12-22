@@ -131,6 +131,9 @@ export const api = {
                      session.tokens?.idToken?.payload.email ||
                      'unknown';
     
+    console.log('🔍 Getting project with ID:', projectId);
+    console.log('🔍 API URL will be:', `${API_BASE_URL}/project/${projectId}`);
+    
     const response = await apiClient.get(`/project/${projectId}`, {
       params: {
         username: username

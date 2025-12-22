@@ -11,19 +11,35 @@ const s3Client = new S3Client({});
 const TABLE_NAME = process.env.TABLE_NAME || 'floorspace-projects';
 const BUCKET_NAME = process.env.BUCKET_NAME || '';
 
+const CORS_HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+  'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+};
+
 interface ProjectInput {
   name: string;
   description?: string;
 }
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+  // Handle OPTIONS preflight request
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: CORS_HEADERS,
+      body: '',
+    };
+  }
+
   try {
     // Extract userId from authorizer context
     const userId = event.requestContext.authorizer?.claims?.sub;
     if (!userId) {
       return {
         statusCode: 401,
-        headers: { 'Content-Type': 'application/json' },
+        headers: CORS_HEADERS,
         body: JSON.stringify({
           error: {
             code: 'UNAUTHORIZED',
@@ -37,7 +53,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (!event.body) {
       return {
         statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: CORS_HEADERS,
         body: JSON.stringify({
           error: {
             code: 'VALIDATION_ERROR',
@@ -53,7 +69,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     } catch (error) {
       return {
         statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: CORS_HEADERS,
         body: JSON.stringify({
           error: {
             code: 'VALIDATION_ERROR',
@@ -67,7 +83,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     if (!projectInput.name || projectInput.name.trim().length === 0) {
       return {
         statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: CORS_HEADERS,
         body: JSON.stringify({
           error: {
             code: 'VALIDATION_ERROR',
@@ -104,7 +120,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         if (existingProject.Item.userId !== userId) {
           return {
             statusCode: 403,
-            headers: { 'Content-Type': 'application/json' },
+            headers: CORS_HEADERS,
             body: JSON.stringify({
               error: {
                 code: 'FORBIDDEN',
@@ -164,7 +180,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     // Return project details
     return {
       statusCode: isNewProject ? 201 : 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: CORS_HEADERS,
       body: JSON.stringify({
         projectId,
         name: projectInput.name.trim(),
@@ -177,7 +193,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.error('Error in createUpdateProject:', error);
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: CORS_HEADERS,
       body: JSON.stringify({
         error: {
           code: 'INTERNAL_ERROR',

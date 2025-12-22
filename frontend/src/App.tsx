@@ -10,6 +10,7 @@ import ProjectDetailsPage from './pages/ProjectDetailsPage';
 import FloorspaceEditorPage from './pages/FloorspaceEditorPage';
 import { verifyAwsConfig } from './utils/verifyConfig';
 import './utils/testAuth';
+import './App.css';
 
 // Verify and configure Amplify
 verifyAwsConfig();
