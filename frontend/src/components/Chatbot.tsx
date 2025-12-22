@@ -53,28 +53,22 @@ interface Message {
 
 interface ChatbotProps {
   projectId: string;
+  onJsonReceived?: (jsonData: any) => void; // Callback to send JSON to 3D viewer
 }
 
-// AI Agent API configuration from .env
-const AI_AGENT_CONFIG = {
-  apiUrl: import.meta.env.VITE_API_URL,
-  region: import.meta.env.VITE_AWS_REGION,
-  accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
-  secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
-  lambdaFunctions: {
-    getProject: import.meta.env.VITE_LAMBDA_GET_PROJECT,
-    createProject: import.meta.env.VITE_LAMBDA_CREATE_PROJECT,
-    updateProject: import.meta.env.VITE_LAMBDA_UPDATE_PROJECT,
-    generatePresignedUrl: import.meta.env.VITE_LAMBDA_GENERATE_PRESIGNED_URL
-  }
-};
-
-const Chatbot = ({ projectId }: ChatbotProps) => {
+const Chatbot = ({ projectId, onJsonReceived }: ChatbotProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: `Hello! I'm your AI assistant for project ${projectId}. I can help you with questions about your 3D model, building design, or any modifications you'd like to make. How can I assist you today?`,
+      text: `🏠 Hello! I'm your AI Room Generator for project ${projectId}. 
+
+I can instantly create rooms and display them in the 3D viewer! Just tell me what you want:
+• "Create a room of 4 by 5 m"
+• "Make a bedroom 3x4 meters with 2 windows"
+• "Generate a living room 6x8m with a door"
+
+I'll generate the room and show it directly in the 3D viewer! 🎉`,
       sender: 'bot',
       timestamp: new Date()
     }
@@ -112,13 +106,24 @@ const Chatbot = ({ projectId }: ChatbotProps) => {
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: aiResponse.message || 'I received your request and processed it.',
+        text: aiResponse.message || '✅ Room generated successfully!',
         sender: 'bot',
         timestamp: new Date(),
         json: aiResponse.json // Store JSON response if available
       };
       
       setMessages(prev => [...prev, botMessage]);
+      
+      // If we have JSON data, send it to the 3D viewer immediately
+      if (aiResponse.json && onJsonReceived) {
+        console.log('Loading room data into 3D viewer:', aiResponse.json);
+        onJsonReceived(aiResponse.json);
+      }
+      
+      // Only auto-download if explicitly requested (disabled by default now)
+      if (aiResponse.autoDownload && aiResponse.json) {
+        downloadRoomFile(aiResponse.json, currentInput);
+      }
     } catch (error) {
       console.error('AI Agent error:', error);
       
@@ -137,99 +142,135 @@ const Chatbot = ({ projectId }: ChatbotProps) => {
     }
   };
 
-  // AI Agent API call function
+  // AI Agent API call function - connects to localhost:8000/generate-room
   const callAIAgent = async (userPrompt: string, projectId: string) => {
-    const apiUrl = AI_AGENT_CONFIG.apiUrl;
-    
-    // Determine which Lambda function to call based on user intent
-    const intent = analyzeUserIntent(userPrompt);
-    
-    const requestBody = {
-      prompt: userPrompt,
-      projectId: projectId,
-      intent: intent,
-      timestamp: new Date().toISOString()
+    // Try the original /process endpoint first, then /generate-room if that fails
+    let requestBody = {
+      message: userPrompt,
+      session_id: projectId
     };
 
-    const response = await fetch(`${apiUrl}/ai-agent`, {
+    console.log('Trying /process endpoint with:', requestBody);
+
+    let response = await fetch('http://localhost:8000/process', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${AI_AGENT_CONFIG.accessKeyId}`, // Simplified auth
       },
       body: JSON.stringify(requestBody)
     });
 
+    // If /process fails, try /generate-room with different format
     if (!response.ok) {
-      throw new Error(`AI Agent API error: ${response.status} ${response.statusText}`);
+      console.log('/process failed, trying /generate-room');
+      requestBody = {
+        message: userPrompt,
+        session_id: projectId
+      };
+
+      console.log('Trying /generate-room endpoint with:', requestBody);
+
+      response = await fetch('http://localhost:8000/generate-room', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+    }
+
+    if (!response.ok) {
+      // Try to get the error details
+      let errorMessage = `AI Agent API error: ${response.status} ${response.statusText}`;
+      try {
+        const errorData = await response.text();
+        if (errorData) {
+          errorMessage += ` - ${errorData}`;
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
+    console.log('AI Agent response:', data);
     
-    // Expected response format:
-    // {
-    //   message: "Human readable response",
-    //   json: { ... }, // JSON data (building modifications, etc.)
-    //   success: true
-    // }
-    
-    return data;
+    // Handle both response formats
+    if (data.question || data.needs_clarification) {
+      // Original format with clarification
+      return {
+        message: data.question || "I've processed your request.",
+        json: data.memory_summary || data,
+        success: true,
+        session_id: data.session_id,
+        needs_clarification: data.needs_clarification
+      };
+    } else {
+      // Direct room generation format
+      return {
+        message: `✅ Room generated successfully! ${userPrompt}`,
+        json: data,
+        success: true,
+        autoDownload: false // Disable auto-download, just show in viewer
+      };
+    }
   };
 
-  // Analyze user intent to determine appropriate Lambda function
-  const analyzeUserIntent = (prompt: string): string => {
-    const lowerPrompt = prompt.toLowerCase();
-    
-    if (lowerPrompt.includes('generate') || lowerPrompt.includes('create') || lowerPrompt.includes('new')) {
-      return 'generate';
+  // Auto-download room file function
+  const downloadRoomFile = (roomData: any, prompt: string) => {
+    try {
+      const dataStr = JSON.stringify(roomData, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+      
+      // Generate filename based on prompt
+      const sanitizedPrompt = prompt.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);
+      const timestamp = new Date().toISOString().slice(0, 10);
+      const filename = `room_${sanitizedPrompt}_${timestamp}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', filename);
+      linkElement.style.display = 'none';
+      document.body.appendChild(linkElement);
+      linkElement.click();
+      document.body.removeChild(linkElement);
+      
+      console.log(`✅ Room file downloaded: ${filename}`);
+    } catch (error) {
+      console.error('Error downloading room file:', error);
     }
-    if (lowerPrompt.includes('modify') || lowerPrompt.includes('change') || lowerPrompt.includes('update')) {
-      return 'modify';
-    }
-    if (lowerPrompt.includes('get') || lowerPrompt.includes('show') || lowerPrompt.includes('display')) {
-      return 'retrieve';
-    }
-    if (lowerPrompt.includes('url') || lowerPrompt.includes('download') || lowerPrompt.includes('export')) {
-      return 'export';
-    }
-    
-    return 'general'; // Default intent
   };
 
   const generateBotResponse = (userInput: string): string => {
     const input = userInput.toLowerCase();
     
+    if (input.includes('room') || input.includes('create') || input.includes('generate')) {
+      return "🏠 I can generate rooms instantly and show them in the 3D viewer! Try saying:\n• 'Create a room of 4 by 5 m'\n• 'Make a bedroom 3x4 meters'\n• 'Generate a living room 6x8m with windows'\n\nI'll create the room and display it directly in the viewer!";
+    }
+    
     if (input.includes('window') || input.includes('door')) {
-      return "I can see your building has windows and doors in the 3D model. Would you like me to help you modify their positions, add new ones, or change their properties like size or style?";
+      return "🚪 I can add windows and doors to your rooms! Just specify:\n• Room dimensions\n• Number and type of windows/doors\n• Their positions\n\nExample: 'Create a 5x4m room with 2 windows and 1 door'";
     }
     
-    if (input.includes('room') || input.includes('space')) {
-      return "Your floorspace design includes different room types. I can help you understand the room layout, suggest improvements, or help you modify room dimensions and purposes.";
+    if (input.includes('size') || input.includes('dimension') || input.includes('meter') || input.includes('m')) {
+      return "📏 Perfect! I work with metric dimensions. Tell me the room size like:\n• '4 by 5 meters'\n• '3x4m'\n• '6 by 8 m'\n\nI'll generate the complete room instantly!";
     }
     
-    if (input.includes('3d') || input.includes('model') || input.includes('view')) {
-      return "The 3D viewer shows your complete building model with walls, windows, doors, and shading elements. You can rotate, zoom, and pan to explore different angles. Would you like tips on navigating the 3D view?";
-    }
-    
-    if (input.includes('change') || input.includes('modify') || input.includes('edit')) {
-      return "I can help you understand how to modify your building design. What specific changes would you like to make? For example, moving windows, changing room sizes, or adding new elements?";
+    if (input.includes('download') || input.includes('file') || input.includes('json')) {
+      return "💾 I automatically provide instant downloads of generated rooms as JSON files! Each room comes with:\n• Complete Floorspace JSON format\n• Ready for 3D visualization\n• Automatic filename with timestamp";
     }
     
     if (input.includes('help') || input.includes('how')) {
-      return "I'm here to help! I can assist with:\n• Understanding your 3D building model\n• Explaining room layouts and dimensions\n• Suggesting design improvements\n• Helping with window and door placement\n• Answering questions about building elements\n\nWhat would you like to know more about?";
+      return "🎉 I'm your AI Room Generator! I can:\n• Generate rooms instantly (90% auto-resolved)\n• Display rooms directly in 3D viewer\n• Create complete Floorspace JSON\n• Provide download option if needed\n\nJust tell me: 'Create a room of [width] by [height] m'";
     }
     
-    if (input.includes('hello') || input.includes('hi')) {
-      return "Hello! I'm excited to help you with your building design. Your 3D model looks great! Is there anything specific you'd like to explore or modify?";
-    }
-    
-    // Default responses
+    // Default responses focused on room generation
     const responses = [
-      "That's an interesting question about your building design. Could you provide more details about what you'd like to know?",
-      "I'd be happy to help you with that! Can you tell me more about what you're trying to achieve with your 3D model?",
-      "Great question! Your building design has many possibilities. What specific aspect would you like to focus on?",
-      "I can help you understand and improve your floorspace design. What particular element interests you most?",
-      "Let me help you with that. Are you looking to modify the existing design or understand how something works?"
+      "🏠 Ready to generate a room! Just tell me the dimensions like '4 by 5 meters' and I'll show it in the 3D viewer!",
+      "✨ I can create any room size you need! Try: 'Create a room of 3 by 4 m' and watch it appear in the viewer!",
+      "🎯 Let's build something! Specify room dimensions and I'll generate it directly in the 3D viewer!",
+      "🚀 I'm optimized for instant room generation! Tell me the size and I'll display it in the viewer immediately!"
     ];
     
     return responses[Math.floor(Math.random() * responses.length)];
@@ -392,7 +433,7 @@ const Chatbot = ({ projectId }: ChatbotProps) => {
                       marginBottom: '8px',
                       fontFamily: 'inherit'
                     }}>
-                      📄 Generated JSON:
+                      🏠 Generated Room Data:
                     </div>
                     <pre style={{ 
                       margin: 0, 
@@ -406,10 +447,10 @@ const Chatbot = ({ projectId }: ChatbotProps) => {
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(JSON.stringify(message.json, null, 2));
-                        // Could add a toast notification here
                       }}
                       style={{
                         marginTop: '8px',
+                        marginRight: '8px',
                         padding: '4px 8px',
                         fontSize: '10px',
                         background: '#007bff',
@@ -419,8 +460,41 @@ const Chatbot = ({ projectId }: ChatbotProps) => {
                         cursor: 'pointer'
                       }}
                     >
-                      Copy JSON
+                      📋 Copy
                     </button>
+                    <button
+                      onClick={() => downloadRoomFile(message.json, 'room')}
+                      style={{
+                        marginTop: '8px',
+                        marginRight: '8px',
+                        padding: '4px 8px',
+                        fontSize: '10px',
+                        background: '#17a2b8',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      💾 Download
+                    </button>
+                    {onJsonReceived && (
+                      <button
+                        onClick={() => onJsonReceived(message.json)}
+                        style={{
+                          marginTop: '8px',
+                          padding: '4px 8px',
+                          fontSize: '10px',
+                          background: '#28a745',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        🏗️ Load in 3D
+                      </button>
+                    )}
                   </div>
                 )}
                 
@@ -498,7 +572,7 @@ const Chatbot = ({ projectId }: ChatbotProps) => {
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               placeholder="Ask me about your building design..."
               style={{
                 flex: 1,
