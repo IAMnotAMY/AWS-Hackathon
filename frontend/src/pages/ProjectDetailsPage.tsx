@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api, Project } from '../services/api';
 import Integrated3DViewer from '../components/Integrated3DViewer';
+import Chatbot from '../components/Chatbot';
 
 const ProjectDetailsPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -408,6 +409,9 @@ const ProjectDetailsPage = () => {
           </div>
         )}
       </main>
+
+      {/* Chatbot - Available on all tabs */}
+      <Chatbot projectId={project.ProjectID} />
     </div>
   );
 };
