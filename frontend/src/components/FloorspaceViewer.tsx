@@ -79,6 +79,44 @@ const FloorspaceViewer = ({ projectId, externalJsonData, onClearAiData }: Floors
             windows: [],
             doors: [],
             shading: []
+          },
+          {
+            name: "First Floor",
+            floor_to_ceiling_height: 10,
+            multiplier: 1,
+            color: "#88acee",
+            spaces: [
+              {
+                name: "Living Room 2",
+                type: "living",
+                color: "#88acee",
+                face_id: "face-2"
+              }
+            ],
+            geometry: {
+              vertices: [
+                {"id": "v5", "x": 0, "y": 0},
+                {"id": "v6", "x": 20, "y": 0},
+                {"id": "v7", "x": 20, "y": 15},
+                {"id": "v8", "x": 0, "y": 15}
+              ],
+              edges: [
+                {"id": "e5", "vertex_ids": ["v5", "v6"]},
+                {"id": "e6", "vertex_ids": ["v6", "v7"]},
+                {"id": "e7", "vertex_ids": ["v7", "v8"]},
+                {"id": "e8", "vertex_ids": ["v8", "v5"]}
+              ],
+              faces: [
+                {
+                  "id": "face-2",
+                  "edge_ids": ["e5", "e6", "e7", "e8"],
+                  "edge_order": [1, 1, 1, 1]
+                }
+              ]
+            },
+            windows: [],
+            doors: [],
+            shading: []
           }
         ],
         window_definitions: [],

@@ -11,13 +11,13 @@ const ProjectDashboard = () => {
   const [error, setError] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Mock projects for demo - keeping your original Jerusalem project
+  // Mock projects for demo
   const mockProjects: Project[] = [
     {
-      ProjectID: 'jerusalem-1',
+      ProjectID: 'poc-project-1',
       UserID: 'user1',
-      ProjectName: 'Jerusalem',
-      Description: 'Your original project with AI-generated room design',
+      ProjectName: 'POC Project 1',
+      Description: 'AI-powered room design and 3D visualization project',
       CreatedTime: Date.now().toString(),
       UpdatedTime: Date.now().toString()
     }
